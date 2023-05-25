@@ -1,0 +1,149 @@
+@import "colors";
+
+
+.home {
+  display: flex;
+  color: black;
+  padding: 3rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.productCard {
+  background-color: $tertiary;
+  width: 200px;
+  margin: 2rem;
+  border-radius: 5px;
+  padding: 2rem;
+  transition: all 0.5s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  h4 {
+    margin: 1rem;
+  }
+
+  button {
+    cursor: pointer;
+    background-color: $secondary;
+    border: none;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    padding: 10px;
+    color: $tertiary;
+    border-radius: 5px;
+    transition: all 0.5s;
+    font-weight: 500;
+    width: 100%;
+    &:hover {
+      background-color: $secondarydark;
+    }
+  }
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// /
+
+// 
+// 
+
+.products {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  color: black;
+  grid-template-columns: 4fr 1fr;
+
+  > .main {
+    padding: 2rem;
+    width: 100%;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    > h1 {
+      color: $tertiary;
+      font: 100 2rem "Roboto";
+    }
+  }
+
+  > .aside {
+    background-color: $primary;
+    background: linear-gradient(to bottom, #FFA8A8, #FCFF00);
+    color: $tertiary;
+    width: 30%;
+    height: 600px;
+    box-shadow: -20px 0px 10px rgba(0, 0, 0, 0.182);
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    align-items: center;
+    flex-direction: column;
+    > h2 {
+      margin: 1rem;
+      font: 100 1.8rem "Roboto";
+      color: black;
+      cursor: pointer;
+      letter-spacing: 2px;
+      font-weight: 400;
+      // &:last-of-type {
+      //   font-weight: 600;
+      // }
+    }
+    >button{
+      width: 96%;
+      height: 60px;
+      background-color: chartreuse;
+      color: black;
+    }
+  }
+}
+
+
+  > svg {
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: inline-block;
+    margin: auto;
+
+    &:hover {
+      color: $secondary;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .products{
+      display: flex;
+      flex-direction: column;
+
+      >.aside{
+        width: 100%;
+      }
+
+      .productCard{
+        width: 100%;
+        >button{
+          height: 60px;
+          width: 120px;
+        }
+      }
+    }
+  }
+
+  .flexedprod{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+  }

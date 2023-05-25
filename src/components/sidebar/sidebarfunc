@@ -1,0 +1,329 @@
+import React, { useState } from "react";
+import "./sidebar.scss";
+
+const Sidebar = ({ placesDetails, handleSort, addPlace }) => {
+  const [selectedPlace, setSelectedPlace] = useState(0);
+
+  const updateSelectedPlace = (modal, index) => {
+    if (modal === "all-reviews") {
+      setSelectedPlace(index);
+      toggleModal();
+    } else if (modal === "add-review") {
+      setSelectedPlace(index);
+      showAddReviewModal();
+    }
+  };
+
+  const toggleModal = () => {
+    let allReviewsModal = document.querySelector("#all-reviews");
+    allReviewsModal.classList.toggle("open");
+  };
+
+  const showAddReviewModal = () => {
+    let addReviewModal = document.querySelector("#add-review");
+    addReviewModal.classList.add("open");
+  };
+
+  const hideAddReviewModal = () => {
+    let addReviewModal = document.querySelector("#add-review");
+    addReviewModal.classList.remove("open");
+  };
+
+  const addReview = () => {
+    // User Input
+    let reviewUser = document.querySelector("#review-user");
+    let reviewText = document.querySelector("#review-text");
+    let reviewRate = document.querySelector("#review-rate");
+    let reviewDate = Math.floor(Date.now() / 1000);
+
+    // Add Review
+    let review = {
+      author_name: reviewUser.value,
+      author_url: "",
+      profile_photo_url: "https://via.placeholder.com/50",
+      rating: reviewRate.value,
+      text: reviewText.value,
+      time: reviewDate,
+    };
+
+    const updatedPlacesDetails = [...placesDetails];
+    updatedPlacesDetails[selectedPlace].reviews.push(review);
+    updatedPlacesDetails[selectedPlace].user_ratings_total += 1;
+
+    // Update Places Details
+    handleSort(updatedPlacesDetails);
+
+    // Hide Modal
+    hideAddReviewModal();
+
+    // Reset Fields
+    resetInputFields([reviewUser, reviewText, reviewRate]);
+  };
+
+  const showAddPlaceModal = () => {
+    let addPlaceModal = document.querySelector("#add-place");
+    addPlaceModal.classList.add("open");
+  };
+
+  const hideAddPlaceModal = () => {
+    let addPlaceModal = document.querySelector("#add-place");
+    addPlaceModal.classList.remove("open");
+  };
+
+  const resetInputFields = (inputs) => {
+    inputs.map((input) => {
+      input.value = "";
+    });
+  };
+
+  const convertTime = (time) => {
+    return new Date(time * 1000).toISOString().slice(0, 19).replace("T", " ");
+  };
+
+  return (
+    <div>
+      <div className="sidebar">
+        <div className="options">
+          {/* <button className="cta" onClick={showAddPlaceModal}>Add New Place</button> */}
+        </div>
+        <div className="places">
+          {placesDetails.map((place, index) => (
+            <div className="place" key={index}>
+              <img
+                src={
+                  place.photos
+                    ? place.photos[0].getUrl({ maxWidth: 300, maxHeight: 300 })
+                    : "https://via.placeholder.com/300"
+                }
+                alt={place.name}
+              />
+              <div className="details">
+                <h2 className="name">{place.name}</h2>
+                <div className="review">
+                  <ul className={"stars rate-" + Math.round(place.rating)}>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                  </ul>
+                  <strong>{Math.round(place.rating)}</strong>
+                  <span
+                    className="all-reviews"
+                    onClick={() => updateSelectedPlace("all-reviews", index)}
+                  >
+                    {" "}
+                    ({place.user_ratings_total})
+                  </span>
+                  <span
+                    className="add-review"
+                    onClick={() => updateSelectedPlace("add-review", index)}
+                  >
+                    Add Review
+                  </span>
+                </div>
+                <ul className="info">
+                  <li>
+                    <i className="fas fa-phone-alt"></i>
+                    <a href={"tel:" + place.formatted_phone_number}>
+                      {place.formatted_phone_number}
+                    </a>
+                  </li>
+                  <li>
+                    <i className="fas fa-map-marker-alt"></i>{" "}
+                    {place.formatted_address}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="modal reviews" id="all-reviews">
+          <div className="inner">
+            <div className="close" onClick={toggleModal}>
+              X
+            </div>
+            <div className="review-list">
+              {placesDetails[0] ? (
+                placesDetails[selectedPlace].reviews.map((review, index) => (
+                  <div className="review" key={index}>
+                    <div className="author">
+                      <img
+                        src={review.profile_photo_url}
+                        alt={review.author_name}
+                        title={review.author_name}
+                        className="author-thumbnail"
+                      />
+                      <ul className="author-info">
+                        <li>
+                          {review.author_url ? (
+                            <a
+                              href={review.author_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {review.author_name}
+                            </a>
+                          ) : (
+                            <span>{review.author_name}</span>
+                          )}
+                        </li>
+                        <li>
+                          <ul
+                            className={
+                              "stars rate-" + Math.round(review.rating)
+                            }
+                          >
+                            <li>
+                              <i className="fas fa-star"></i>
+                            </li>
+                            <li>
+                              <i className="fas fa-star"></i>
+                            </li>
+                            <li>
+                              <i className="fas fa-star"></i>
+                            </li>
+                            <li>
+                              <i className="fas fa-star"></i>
+                            </li>
+                            <li>
+                              <i className="fas fa-star"></i>
+                            </li>
+                          </ul>
+                          <time>{convertTime(review.time)}</time>
+                        </li>
+                      </ul>
+                    </div>
+                    <p className="text">{review.text}</p>
+                  </div>
+                ))
+              ) : (
+                <div>Nothing!</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="modal add-review" id="add-review">
+          <div className="inner">
+            <div className="close" onClick={hideAddReviewModal}>
+              X
+            </div>
+            <form action="" onSubmit={(e) => e.preventDefault()}>
+              <div className="form-group">
+                <label htmlFor="review-user">Full Name</label>
+                <input
+                  type="text"
+                  id="review-user"
+                  placeholder="Ex. John Doe"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="review-rate">Rating</label>
+                <select id="review-rate" required>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="review-text">Review</label>
+                <textarea
+                  id="review
+-text"
+                  cols="30"
+                  rows="10"
+                  placeholder="Write your review..."
+                  required
+                ></textarea>
+              </div>
+              <button onClick={addReview}>Add Review</button>
+            </form>
+          </div>
+        </div>
+
+        <div className="modal add-place" id="add-place">
+          <div className="inner">
+            <div className="close" onClick={hideAddPlaceModal}>
+              X
+            </div>
+            <form action="" onSubmit={(e) => e.preventDefault()}>
+              <div className="form-group">
+                <label htmlFor="place-name">Place Name</label>
+                <input
+                  type="text"
+                  id="place-name"
+                  placeholder="Ex. The Osmanly Restaurant"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-address">Address</label>
+                <input
+                  type="text"
+                  id="place-address"
+                  placeholder="Ex. Kempinski Nile Hotel, Corniche El Nil, 12 Ahmed Raghab Street"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-latitude">Latitude</label>
+                <input
+                  type="text"
+                  id="place-latitude"
+                  placeholder="Ex. 48.850073"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-longitude">Longitude</label>
+                <input
+                  type="text"
+                  id="place-longitude"
+                  placeholder="Ex. 2.299631"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-phone">Phone</label>
+                <input
+                  type="text"
+                  id="place-phone"
+                  placeholder="Ex. 02 27980000"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-rate">Rating</label>
+                <select id="place-rate" required>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <button onClick={addPlace}>Add Place</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Sidebar;
