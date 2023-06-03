@@ -189,6 +189,9 @@ const Cart = () => {
                   decrement={decrement}
                   increment={increment}
                   deleteHandler={deleteHandler}
+                  hotelname={i.hotelname}
+                  address={i.address}
+                  hotelimage={i.hotelimage}
                 />
               ))
             ) : (
@@ -231,12 +234,17 @@ const CartItem = ({
   increment,
   deleteHandler,
   id,
+  hotelname,
+  address,
+  hotelimage,
 }) => (
   <div className="cartItem">
     <img src={imgSrc} alt="Item" />
     <article>
       <h3>{name}</h3>
       <p>${price}</p>
+      <p>{hotelname}</p>
+      <p>{address}</p>
     </article>
 
     <div>

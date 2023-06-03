@@ -14,8 +14,8 @@ import Noodles from "./products/Noodles";
 import Pizza from "./products/pizza";
 
 const Items = () => {
-  const [t, sett] = useState(true);
-  const [b, setb] = useState(false);
+  const [t, sett] = useState(false);
+  const [b, setb] = useState(true);
   const [n, setn] = useState(false);
   const [p, setp] = useState(false);
   const [bu, setbu] = useState(false);

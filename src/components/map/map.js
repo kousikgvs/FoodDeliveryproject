@@ -1,10 +1,12 @@
-import React, { Component } from "react";
-import "./map.scss";
+import React, {Component} from 'react';
+import './map.scss';
 
 class Map extends Component {
-  render() {
-    return <div id="map"></div>;
-  }
+    render() {
+        return (
+            <div id="map"></div>
+        )
+    }
 }
 
 export default Map;

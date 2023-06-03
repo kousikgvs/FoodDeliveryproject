@@ -1,48 +1,73 @@
-import React, { useState } from "react";
+import React, { Component } from "react";
 import "./sidebar.scss";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import Itemdiv from "../Itemdiv";
-const Sidebar = (props) => {
-  const [selectedPlace, setSelectedPlace] = useState(0);
+import ProductDisplay from "../products/ProductsDisplay";
 
+class Sidebar extends Component {
+  state = {
+    selectedPlace: 0,
+    add: [],
+  };
+
+  disposablediv = () => {
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function () {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight) {
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        }
+      });
+    }
+  };
   // Show All Reviews
-  const updateSelectedPlace = (modal, index) => {
+  updateSelectedPlace = (modal, index) => {
     if (modal === "all-reviews") {
-      setSelectedPlace(index);
-      toggleModal();
+      this.setState(
+        {
+          selectedPlace: index,
+        },
+        this.toggleModal
+      );
     } else if (modal === "add-review") {
-      setSelectedPlace(index);
-      showAddReviewModal();
+      this.setState(
+        {
+          selectedPlace: index,
+        },
+        this.showAddReviewModal
+      );
     }
   };
 
-  const toggleModal = () => {
-    const allReviewsModal = document.querySelector("#all-reviews");
+  toggleModal = () => {
+    let allReviewsModal = document.querySelector("#all-reviews");
     allReviewsModal.classList.toggle("open");
   };
 
   // Add Review
-  const showAddReviewModal = () => {
-    const addReviewModal = document.querySelector("#add-review");
+  showAddReviewModal = () => {
+    let addReviewModal = document.querySelector("#add-review");
     addReviewModal.classList.add("open");
   };
 
-  const hideAddReviewModal = () => {
-    const addReviewModal = document.querySelector("#add-review");
+  hideAddReviewModal = () => {
+    let addReviewModal = document.querySelector("#add-review");
     addReviewModal.classList.remove("open");
   };
 
-  const addReview = () => {
+  addReview = () => {
     // User Input
-    const reviewUser = document.querySelector("#review-user");
-    const reviewText = document.querySelector("#review-text");
-    const reviewRate = document.querySelector("#review-rate");
-    const reviewDate = Math.floor(Date.now() / 1000);
+    let reviewUser = document.querySelector("#review-user");
+    let reviewText = document.querySelector("#review-text");
+    let reviewRate = document.querySelector("#review-rate");
+    let reviewDate = Math.floor(Date.now() / 1000);
 
     // Add Review
-    const review = {
+    let review = {
       author_name: reviewUser.value,
       author_url: "",
       profile_photo_url: "https://via.placeholder.com/50",
@@ -50,38 +75,40 @@ const Sidebar = (props) => {
       text: reviewText.value,
       time: reviewDate,
     };
-    props.placesDetails[selectedPlace].reviews.push(review);
-    props.placesDetails[selectedPlace].user_ratings_total += 1;
+    this.props.placesDetails[this.state.selectedPlace].reviews.push(review);
+    this.props.placesDetails[this.state.selectedPlace].user_ratings_total += 1;
 
     // Hide Modal
-    hideAddReviewModal();
+    this.hideAddReviewModal();
 
     // Reset Fields
-    resetInputFields([reviewUser, reviewText, reviewRate]);
+    this.resetInputFields([reviewUser, reviewText, reviewRate]);
   };
 
   // Add Place
-  const showAddPlaceModal = () => {
-    const addPlaceModal = document.querySelector("#add-place");
+  showAddPlaceModal = () => {
+    let addPlaceModal = document.querySelector("#add-place");
     addPlaceModal.classList.add("open");
   };
 
-  const hideAddPlaceModal = () => {
-    const addPlaceModal = document.querySelector("#add-place");
+  hideAddPlaceModal = () => {
+    let addPlaceModal = document.querySelector("#add-place");
     addPlaceModal.classList.remove("open");
   };
 
-  const addPlace = () => {
+  addPlace = () => {
     // User Input
-    const placeName = document.querySelector("#place-name");
-    const placeAddress = document.querySelector("#place-address");
-    const placePhone = document.querySelector("#place-phone");
-    const placeLat = document.querySelector("#place-latitude");
-    const placeLng = document.querySelector("#place-longitude");
-    const placeRate = document.querySelector("#place-rate");
+    let placeName = document.querySelector("#place-name");
+    let placeAddress = document.querySelector("#place-address");
+    let placePhone = document.querySelector("#place-phone");
+    let placeLat = document.querySelector("#place-latitude");
+    let placeLng = document.querySelector("#place-longitude");
+    let placeRate = document.querySelector("#place-rate");
+    console.log(`Place Lat: `, placeLat.value);
+    console.log(`Place Lng: `, placeLng.value);
 
     // Add Place
-    const place = {
+    let place = {
       name: placeName.value,
       formatted_address: placeAddress.value,
       formatted_phone_number: placePhone.value,
@@ -92,13 +119,13 @@ const Sidebar = (props) => {
       lng: Number(placeLng.value),
     };
 
-    props.addPlace(place);
+    this.props.addPlace(place);
 
     // Hide Modal
-    hideAddPlaceModal();
+    this.hideAddPlaceModal();
 
     // Reset Fields
-    resetInputFields([
+    this.resetInputFields([
       placeName,
       placeAddress,
       placePhone,
@@ -109,66 +136,176 @@ const Sidebar = (props) => {
   };
 
   // Reset Input Fields
-  const resetInputFields = (inputs) => {
+  resetInputFields = (inputs) => {
     inputs.map((input) => {
       input.value = "";
     });
   };
 
   // Convert UNIX Timestamp
-  const convertTime = (time) => {
+  convertTime = (time) => {
     return new Date(time * 1000).toISOString().slice(0, 19).replace("T", " ");
   };
 
-  const [selectedItem, setSelectedItem] = useState("");
-
-  const handleChange = (event) => {
-    setSelectedItem(event.target.value);
-    if (event.target.value === "Kabab Biryani") {
-      setItemcost(130);
-    } else if (event.target.value === "Gobi fried Rice") {
-      setItemcost(110);
-    } else if (event.target.value === "Veg Fried Rice") {
-      setItemcost(100);
-    } else if (event.target.value === "Kabab Biryani") {
-      setItemcost(130);
-    }
-  };
-  const [hotel, sethotel] = useState("");
-  const [id, setid] = useState("");
-  const [img, setimg] = useState("");
-
-  const dispatch = useDispatch();
-
-  const addToCartHandler = (options) => {
-    dispatch({ type: "addToCart", payload: options });
-    dispatch({ type: "calculatePrice" });
-    toast.success("Added To Cart");
-  };
-
-  const [itemcost, setItemcost] = useState(0);
-  return (
-    <>
+  render() {
+    let { placesDetails, handleSort } = this.props;
+    return (
       <div className="sidebar">
         <div className="options">
-          {/* <button className="cta" onClick={showAddPlaceModal}>Add New Place</button> */}
+          {/* <div className="sort">
+            Sort by:{" "}
+            <select id="sortby" onChange={handleSort}>
+              <option value="0">Any Rating</option>
+              <option value="1">+1 ⭐✰✰✰✰</option>
+              <option value="2">+2 ⭐⭐✰✰✰</option>
+              <option value="3">+3 ⭐⭐⭐✰✰</option>
+              <option value="4">+4 ⭐⭐⭐⭐✰</option>
+            </select>
+          </div>
+          <button className="cta" onClick={this.showAddPlaceModal}>
+            Add New Place
+          </button> */}
+          <h1>Restaurants near me</h1>
         </div>
         <div className="places">
-          {props.placesDetails.map((place, index) => (
-            <Itemdiv place={place} index={index} />
+          {placesDetails.map((place, index) => (
+            <div className="place" key={index}>
+              <img
+                className="resimage"
+                src={
+                  place.photos
+                    ? place.photos[0].getUrl()
+                    : "https://via.placeholder.com/300"
+                }
+                alt={place.name}
+              />
+              <div className="details">
+                <h2 className="name">{place.name}</h2>
+                <div className="review">
+                  <ul className={"stars rate-" + Math.round(place.rating)}>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                    <li>
+                      <i className="fas fa-star"></i>
+                    </li>
+                  </ul>
+                  <strong>{Math.round(place.rating)}</strong>
+                  <span
+                    className="all-reviews"
+                    onClick={() =>
+                      this.updateSelectedPlace("all-reviews", index)
+                    }
+                  >
+                    ({place.user_ratings_total})
+                  </span>
+                  <span
+                    className="add-review"
+                    onClick={() =>
+                      this.updateSelectedPlace("add-review", index)
+                    }
+                  >
+                    Add Review
+                  </span>
+                  {/* <span className="add-review" onClick={(e) => openReviewModal(index)}>Add Review</span> */}
+                </div>
+                <ul className="info">
+                  <li>
+                    <i className="fas fa-phone-alt"></i>
+                    <a href={"tel:" + place.formatted_phone_number}>
+                      {place.formatted_phone_number}
+                    </a>
+                  </li>
+                  <li>
+                    <i className="fas fa-map-marker-alt"></i>{" "}
+                    {place.formatted_address}
+                  </li>
+                </ul>
+                <button
+                  onClick={() => {
+                    console.log(this.state.add);
+                    const newItem = [place.name, place.formatted_address];
+                    this.setState({
+                      add: [...this.state.add, newItem],
+                    });
+                  }}
+                >
+                  add
+                </button>
+                {/* <p>{this.state.add}</p> */}
+                <ul>
+                  {this.state.add.map((item, index) => (
+                    <p key={index}>{item}</p>
+                  ))}
+                </ul>
+
+                <button class="collapsible" onClick={this.disposablediv}>
+                  <p>Tiffins</p>
+                  <span class="material-symbols-outlined">expand_more</span>
+                </button>
+                <div class="contentdis">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                  </p>
+                </div>
+                <button class="collapsible" onClick={this.disposablediv}>
+                  <p>Lunch</p>
+                  <span class="material-symbols-outlined">expand_more</span>
+                </button>
+                <div class="contentdis">
+                  {/* Biryani  */}
+                  <ProductDisplay
+                    image={
+                      place.photos
+                        ? place.photos[0].getUrl({
+                            maxWidth: 300,
+                            maxHeight: 300,
+                          })
+                        : "https://via.placeholder.com/300"
+                    }
+                    hotelname={place.name}
+                    address={place.formatted_address}
+                  />
+                </div>
+                <button class="collapsible" onClick={this.disposablediv}>
+                  <p>Dinner</p>
+                  <span class="material-symbols-outlined">expand_more</span>
+                </button>
+                <div class="contentdis">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                  </p>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
 
         <div className="modal reviews" id="all-reviews">
           <div className="inner">
-            <div className="close" onClick={toggleModal}>
+            <div className="close" onClick={this.toggleModal}>
               X
             </div>
             <div className="review-list">
-              {props.placesDetails[0] ? (
-                props.placesDetails[selectedPlace].reviews.map(
-                  (review, index) => (
-                    <div className="review" key={index}>
+              {placesDetails[0] ? (
+                placesDetails[this.state.selectedPlace].reviews.map(
+                  (review) => (
+                    <div className="review">
                       <div className="author">
                         <img
                           src={review.profile_photo_url}
@@ -208,11 +345,11 @@ const Sidebar = (props) => {
                                 <i className="fas fa-star"></i>
                               </li>
                             </ul>
-                            <time>{convertTime(review.time)}</time>
+                            <time>{this.convertTime(review.time)}</time>
                           </li>
                         </ul>
                       </div>
-                      <p className="text">{review.text}</p>
+                      <p class="text">{review.text}</p>
                     </div>
                   )
                 )
@@ -225,7 +362,7 @@ const Sidebar = (props) => {
 
         <div className="modal add-review" id="add-review">
           <div className="inner">
-            <div className="close" onClick={hideAddReviewModal}>
+            <div className="close" onClick={this.hideAddReviewModal}>
               X
             </div>
             <form action="" onSubmit={(e) => e.preventDefault()}>
@@ -258,79 +395,79 @@ const Sidebar = (props) => {
                   required
                 ></textarea>
               </div>
-              <button onClick={addReview}>Add Review</button>
+              <button onClick={this.addReview}>Add Review</button>
+            </form>
+          </div>
+        </div>
+
+        <div className="modal add-place" id="add-place">
+          <div className="inner">
+            <div className="close" onClick={this.hideAddPlaceModal}>
+              X
+            </div>
+            <form action="" onSubmit={(e) => e.preventDefault()}>
+              <div className="form-group">
+                <label htmlFor="place-name">Place Name</label>
+                <input
+                  type="text"
+                  id="place-name"
+                  placeholder="Ex. The Osmanly Restaurant"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-address">Address</label>
+                <input
+                  type="text"
+                  id="place-address"
+                  placeholder="Ex. Kempinski Nile Hotel, Corniche El Nil, 12 Ahmed Raghab Street"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-latitude">Latitude</label>
+                <input
+                  type="text"
+                  id="place-latitude"
+                  placeholder="Ex. 48.850073"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-longitude">Longitude</label>
+                <input
+                  type="text"
+                  id="place-longitude"
+                  placeholder="Ex. 2.299631"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-phone">Phone</label>
+                <input
+                  type="text"
+                  id="place-phone"
+                  placeholder="Ex. 02 27980000"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="place-rate">Rating</label>
+                <select id="place-rate" required>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <button onClick={this.addPlace}>Add Place</button>
             </form>
           </div>
         </div>
       </div>
-
-      <div className="modal add-place" id="add-place">
-        <div className="inner">
-          <div className="close" onClick={hideAddPlaceModal}>
-            X
-          </div>
-          <form action="" onSubmit={(e) => e.preventDefault()}>
-            <div className="form-group">
-              <label htmlFor="place-name">Place Name</label>
-              <input
-                type="text"
-                id="place-name"
-                placeholder="Ex. The Osmanly Restaurant"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="place-address">Address</label>
-              <input
-                type="text"
-                id="place-address"
-                placeholder="Ex. Kempinski Nile Hotel, Corniche El Nil, 12 Ahmed Raghab Street"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="place-latitude">Latitude</label>
-              <input
-                type="text"
-                id="place-latitude"
-                placeholder="Ex. 48.850073"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="place-longitude">Longitude</label>
-              <input
-                type="text"
-                id="place-longitude"
-                placeholder="Ex. 2.299631"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="place-phone">Phone</label>
-              <input
-                type="text"
-                id="place-phone"
-                placeholder="Ex. 02 27980000"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="place-rate">Rating</label>
-              <select id="place-rate" required>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-            </div>
-            <button onClick={addPlace}>Add Place</button>
-          </form>
-        </div>
-      </div>
-    </>
-  );
-};
+    );
+  }
+}
 
 export default Sidebar;

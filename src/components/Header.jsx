@@ -83,7 +83,7 @@ const Header = () => {
 
       <a>
         <a>
-          <Link to={"/"} className="active">
+          <Link to={"/"}>
             <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
               <span class="material-symbols-outlined">home</span>
               <p style={{ fontFamily: "'Roboto Mono', monospace" }}>Home</p>

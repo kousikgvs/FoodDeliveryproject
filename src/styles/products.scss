@@ -7,18 +7,19 @@
   padding: 3rem;
   justify-content: center;
   flex-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .productCard {
   background-color: $tertiary;
-  width: 200px;
-  margin: 2rem;
   border-radius: 5px;
   padding: 2rem;
   transition: all 0.5s;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 10px;
 
   img {
     width: 100%;
